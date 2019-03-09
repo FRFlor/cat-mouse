@@ -45,4 +45,20 @@ describe('HelloWorld.vue', () => {
         wrapper.find('#decrease-maze-size').trigger('click');
         expect(currentGridSize()).to.equal(7);
     });
+
+    it('Allows the user to place an element into the grid', () => {
+        // Adding a milk cell
+        expect(wrapper.find('.milk-cell-image').isVisible()).to.equal(false);
+        wrapper.find('#milk-select').trigger('click');
+        wrapper.find('.maze-cell').trigger('click');
+        expect(wrapper.find('.milk-cell-image').isVisible()).to.equal(true);
+
+        // Replacing the milk cell for a cat cell
+        expect(wrapper.find('.milk-cell-image').isVisible()).to.equal(true);
+        expect(wrapper.find('.cat-cell-image').isVisible()).to.equal(false);
+        wrapper.find('#cat-select').trigger('click');
+        wrapper.find('.maze-cell').trigger('click');
+        expect(wrapper.find('.milk-cell-image').isVisible()).to.equal(false);
+        expect(wrapper.find('.cat-cell-image').isVisible()).to.equal(true);
+    });
 });

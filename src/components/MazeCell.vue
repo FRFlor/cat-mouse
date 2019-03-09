@@ -2,9 +2,9 @@
     <div class="maze-cell"
          :class="{'wall' : content === CellContent.Wall}"
          @click="$emit('click')">
-        <img v-show="content === CellContent.Milk" src="../assets/milk.svg">
-        <img v-show="content === CellContent.Cat" src="../assets/cat.svg">
-        <img v-show="content === CellContent.Mouse" src="../assets/mouse.svg">
+        <img v-show="content === CellContent.Milk" src="../assets/milk.svg" class="milk-cell-image">
+        <img v-show="content === CellContent.Cat" src="../assets/cat.svg" class="cat-cell-image">
+        <img v-show="content === CellContent.Mouse" src="../assets/mouse.svg" class="mouse-cell-image">
     </div>
 </template>
 
@@ -42,7 +42,7 @@
         }
 
         img {
-            max-width: 65%;
+            max-width: 85%;
             height: auto;
         }
 
