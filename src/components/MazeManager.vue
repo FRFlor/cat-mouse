@@ -21,7 +21,8 @@
                 </div>
 
                 <div>
-                    <button>Play</button>
+                    <button @click="onPlayStopClicked"
+                    v-text="gameLoopInterval ? 'Stop' : 'Play'">Play</button>
                 </div>
             </div>
 
@@ -49,6 +50,7 @@
         </div>
         <maze-grid :grid-size="gridSize"
                    :action-request="newAction"
+                   @grid-state-changed="(newState) => grid = newState"
                    @cell-clicked="onCellClicked"/>
     </div>
 </template>
@@ -56,22 +58,45 @@
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import MazeGrid, {CellContent, CellData, EMPTY_ACTION, MazeGridAction} from './MazeGrid.vue';
+    import Cat from '../classes/Cat';
 
     @Component({components: {MazeGrid}})
     export default class MazeManager extends Vue {
         private CellContent = CellContent;
+
         private gridSize: number = 10;
         private newAction: MazeGridAction = EMPTY_ACTION;
-        private actionsCount: number = 0;
         private elementSelected: CellContent = CellContent.Wall;
+        private grid: CellContent[] = [];
+        private actionsCount: number = 0;
+        private cat: Cat = new Cat(0, this.grid);
+        private gameLoopInterval: any = null;
 
-        private onCellClicked(currentState: CellData) {
+        private onPlayStopClicked(): void {
+            if (this.gameLoopInterval) {
+                clearInterval(this.gameLoopInterval);
+                this.gameLoopInterval = null;
+            } else {
+                this.gameLoopInterval = setInterval(() => {
+                    this.gameLoop();
+                }, 500);
+            }
+        }
+
+        private onCellClicked(currentState: CellData): void {
+            if (this.elementSelected === CellContent.Cat) {
+                this.cat = new Cat(currentState.position, this.grid);
+            }
             this.changeCellContent(currentState.position, this.elementSelected);
         }
 
         private changeCellContent(position: number, content: CellContent) {
             this.newAction.cellData = {position, content};
             Vue.set(this.newAction, 'id', ++this.actionsCount);
+        }
+
+        private gameLoop(): void {
+            this.changeCellContent(this.cat.getNewPosition(), CellContent.Cat);
         }
     }
 </script>

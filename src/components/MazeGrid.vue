@@ -69,6 +69,11 @@
             this.cellsContent = 'x'.repeat(this.gridSize ** 2).split('').map(() => CellContent.Nothing);
         }
 
+        @Watch('cellsContent')
+        private notifyOfGridChange(): void {
+            this.$emit('grid-state-changed', this.cellsContent);
+        }
+
         // Event Handlers
         private created(): void {
             this.populateGridWithEmptyCells();
