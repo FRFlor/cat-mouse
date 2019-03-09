@@ -4,6 +4,7 @@
         <maze-cell v-for="(content, index) in cellsContent"
                    :key="index"
                    :content="content"
+                   @click="changeContent(index)"
                    class="maze-cell">
 
         </maze-cell>
@@ -16,8 +17,9 @@
 
     @Component({components: {MazeCell}})
     export default class MazeGrid extends Vue {
-        @Prop({default: 5}) public gridSize!: number;
+        @Prop({default: 9}) public gridSize!: number;
 
+        private CellContent = CellContent;
         private cellsContent: CellContent[] = [];
 
         private created(): void {
@@ -26,6 +28,10 @@
 
         private populateGridWithEmptyCells(): void {
             this.cellsContent = 'x'.repeat(this.gridSize ** 2).split('').map(() => CellContent.Nothing);
+        }
+
+        private changeContent(cellIndex: number): void {
+            Vue.set(this.cellsContent, cellIndex, CellContent.Wall);
         }
 
         private get columnCount(): number {
