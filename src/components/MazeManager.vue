@@ -8,7 +8,7 @@ import {CellContent} from './MazeCell';
                         <button>Load</button>
                         <button>Export</button>
                     </div>
-                    <button>Get Example</button>
+                    <button id="get-example">Get Example</button>
                 </div>
                 <div>
                     <span class="grid-size-label">Grid Size</span>
@@ -78,6 +78,10 @@ import {CellContent} from './MazeCell';
 </script>
 
 <style scoped lang="scss">
+    #get-example {
+        width: 100%;
+    }
+
     .maze-manager {
         width: 18rem;
         font-size: 0.85rem;
@@ -96,8 +100,13 @@ import {CellContent} from './MazeCell';
                 font-size: 1rem;
             }
             .options {
-                img.selected {
-                    border: #7ec4ff 5px solid;
+                img {
+                    &:hover {
+                        cursor: pointer;
+                    }
+                    &.selected {
+                        border: #7ec4ff 5px solid;
+                    }
                 }
                 display: flex;
                 justify-content: space-between;
