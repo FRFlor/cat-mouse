@@ -6,19 +6,17 @@
                    :content="content"
                    @click="changeContent(index)"
                    class="maze-cell">
-
         </maze-cell>
     </div>
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue} from 'vue-property-decorator';
+    import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
     import MazeCell, {CellContent} from './MazeCell.vue';
 
     @Component({components: {MazeCell}})
     export default class MazeGrid extends Vue {
-        @Prop({default: 9}) public gridSize!: number;
-
+        @Prop({default: 6}) private gridSize!: number;
         private CellContent = CellContent;
         private cellsContent: CellContent[] = [];
 
@@ -26,6 +24,7 @@
             this.populateGridWithEmptyCells();
         }
 
+        @Watch('gridSize')
         private populateGridWithEmptyCells(): void {
             this.cellsContent = 'x'.repeat(this.gridSize ** 2).split('').map(() => CellContent.Nothing);
         }

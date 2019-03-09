@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="app">
-      <maze-grid></maze-grid>
+      <maze-manager></maze-manager>
     </div>
     <div class="credits">
       <div>Credits for the Icons: </div>
@@ -26,11 +26,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import MazeGrid from './components/MazeGrid.vue';
+import MazeManager from './components/MazeManager.vue';
 
 @Component({
   components: {
-      MazeGrid,
+      MazeManager,
   },
 })
 export default class App extends Vue {}
@@ -38,10 +38,7 @@ export default class App extends Vue {}
 
 <style>
   #app {
-    width: 100vw;
-    height: 100vh;
+    margin: 5rem 5rem;
     display: flex;
-    align-items: center;
-    justify-content: center;
   }
 </style>
