@@ -15,3 +15,13 @@ import MazeGrid from './components/MazeGrid.vue';
 })
 export default class App extends Vue {}
 </script>
+
+<style>
+  #app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
