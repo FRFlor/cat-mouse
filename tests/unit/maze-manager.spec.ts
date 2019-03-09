@@ -48,17 +48,35 @@ describe('HelloWorld.vue', () => {
 
     it('Allows the user to place an element into the grid', () => {
         // Adding a milk cell
-        expect(wrapper.find('.milk-cell-image').isVisible()).to.equal(false);
+        expect(wrapper.find('.milk-cell-image').exists()).to.equal(false);
         wrapper.find('#milk-select').trigger('click');
         wrapper.find('.maze-cell').trigger('click');
-        expect(wrapper.find('.milk-cell-image').isVisible()).to.equal(true);
+        expect(wrapper.find('.milk-cell-image').exists()).to.equal(true);
 
         // Replacing the milk cell for a cat cell
-        expect(wrapper.find('.milk-cell-image').isVisible()).to.equal(true);
-        expect(wrapper.find('.cat-cell-image').isVisible()).to.equal(false);
+        expect(wrapper.find('.milk-cell-image').exists()).to.equal(true);
+        expect(wrapper.find('.cat-cell-image').exists()).to.equal(false);
         wrapper.find('#cat-select').trigger('click');
         wrapper.find('.maze-cell').trigger('click');
-        expect(wrapper.find('.milk-cell-image').isVisible()).to.equal(false);
-        expect(wrapper.find('.cat-cell-image').isVisible()).to.equal(true);
+        expect(wrapper.find('.milk-cell-image').exists()).to.equal(false);
+        expect(wrapper.find('.cat-cell-image').exists()).to.equal(true);
+    });
+
+    it('Prevents more than 1 cat to be present in the grid', () => {
+        expect(wrapper.findAll('.cat-cell-image').length).to.equal(0);
+        wrapper.find('#cat-select').trigger('click');
+        wrapper.findAll('.maze-cell').at(0).trigger('click');
+        expect(wrapper.findAll('.cat-cell-image').length).to.equal(1);
+        wrapper.findAll('.maze-cell').at(1).trigger('click');
+        expect(wrapper.findAll('.cat-cell-image').length).to.equal(1);
+    });
+
+    it('Prevents more than 1 mouse to be present in the grid', () => {
+        expect(wrapper.findAll('.mouse-cell-image').length).to.equal(0);
+        wrapper.find('#mouse-select').trigger('click');
+        wrapper.findAll('.maze-cell').at(0).trigger('click');
+        expect(wrapper.findAll('.mouse-cell-image').length).to.equal(1);
+        wrapper.findAll('.maze-cell').at(1).trigger('click');
+        expect(wrapper.findAll('.mouse-cell-image').length).to.equal(1);
     });
 });

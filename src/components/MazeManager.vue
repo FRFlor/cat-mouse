@@ -1,4 +1,3 @@
-import {CellContent} from './MazeCell';
 <template>
     <div class="maze-manager">
         <div class="hud">

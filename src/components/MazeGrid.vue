@@ -49,6 +49,14 @@
         // Watchers
         @Watch('actionRequest.id')
         public changeCellContent(): void {
+            if (this.actionRequest.cellData.content === CellContent.Cat) {
+                this.removeAll(CellContent.Cat);
+            }
+
+            if (this.actionRequest.cellData.content === CellContent.Mouse) {
+                this.removeAll(CellContent.Mouse);
+            }
+
             Vue.set(
                 this.cellsContent,
                 this.actionRequest.cellData.position,
@@ -68,6 +76,14 @@
 
         private onCellClicked(currentState: CellData): void {
             this.$emit('cell-clicked', currentState);
+        }
+
+        private removeAll(target: CellContent): void {
+            this.cellsContent.forEach((cellContent: CellContent, index: number) => {
+                if (cellContent === target) {
+                    this.cellsContent[index] = CellContent.Nothing;
+                }
+            });
         }
     }
 </script>
