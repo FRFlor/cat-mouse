@@ -104,7 +104,7 @@
                 this.cat.start();
                 this.gameLoopInterval = setInterval(() => {
                     this.gameLoop();
-                }, 500);
+                }, 350);
             }
         }
 
