@@ -100,16 +100,22 @@
             if (this.gameLoopInterval) {
                 this.endGameLoop();
             } else {
-                const catCell: GridCell | undefined = this.grid.find((cell: GridCell) => cell.content === CellContent.Cat);
-                if (catCell === undefined) {
+                this.restartCat();
+                if (this.catCell === undefined) {
                     return;
                 }
-                this.cat = new Cat(catCell, this.grid);
-                this.cat.start();
                 this.gameLoopInterval = setInterval(() => {
                     this.gameLoop();
                 }, 350);
             }
+        }
+
+        private restartCat(): void {
+            if (! this.catCell || !this.mouseCell) {
+                return;
+            }
+            this.cat = new Cat(this.catCell, this.grid);
+            this.cat.start();
         }
 
         private onCellClicked(cell: GridCell): void {
@@ -124,6 +130,7 @@
             }
 
             cell.content = this.elementSelected;
+            this.restartCat();
         }
 
         private endGameLoop(): void {
@@ -134,16 +141,14 @@
             clearInterval(this.gameLoopInterval);
             this.gameLoopInterval = null;
 
-            const mouse: GridCell | undefined = this.grid.find((cell: GridCell) => cell.content === CellContent.Mouse);
-            const cat: GridCell | undefined = this.grid.find((cell: GridCell) => cell.content === CellContent.Cat);
-            if (cat === undefined) {
+            if (this.catCell === undefined) {
                 return;
             }
 
-            const isMouseAlive: boolean = mouse !== undefined;
+            const isMouseAlive: boolean = this.mouseCell !== undefined;
 
             // @ts-ignore
-            isMouseAlive ? (mouse.isSpinning = true) : (cat.isSpinning = true);
+            isMouseAlive ? (this.mouseCell.isSpinning = true) : (this.catCell.isSpinning = true);
         }
 
         private gameLoop(): void {
@@ -158,6 +163,14 @@
 
         private stopSpinningAnimations(): void {
             this.grid.forEach((cell: GridCell) => cell.isSpinning = false);
+        }
+
+        private get catCell(): GridCell | undefined {
+            return this.grid.find((cell: GridCell) => cell.content === CellContent.Cat);
+        }
+
+        private get mouseCell(): GridCell | undefined {
+            return this.grid.find((cell: GridCell) => cell.content === CellContent.Mouse);
         }
     }
 </script>
