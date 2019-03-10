@@ -10,6 +10,7 @@ export default class GridCell {
     public static gridSize: number = 1;
     public content: CellContent;
     public position: number;
+    public isSpinning: boolean;
 
     public get coordinates(): Coordinates {
         const row: number = Math.floor(this.position / GridCell.gridSize);
@@ -21,5 +22,6 @@ export default class GridCell {
     constructor(position: number, content: CellContent = CellContent.Nothing) {
         this.position = position;
         this.content = content;
+        this.isSpinning = false;
     }
 }

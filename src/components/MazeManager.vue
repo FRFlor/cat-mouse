@@ -22,7 +22,8 @@
 
                 <div>
                     <button @click="onPlayStopClicked"
-                    v-text="gameLoopInterval ? 'Stop' : 'Play'">Play</button>
+                            v-text="gameLoopInterval ? 'Stop' : 'Play'">Play
+                    </button>
                 </div>
             </div>
 
@@ -57,7 +58,7 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import MazeGrid, {CellContent, EMPTY_ACTION, MazeGridAction} from './MazeGrid.vue';
+    import MazeGrid, {CellContent, EMPTY_ACTION, MazeGridAction, MazeGridActionType} from './MazeGrid.vue';
     import Cat from '../classes/Cat';
     import GridCell from '../classes/GridCell';
 
@@ -70,15 +71,17 @@
         private elementSelected: CellContent = CellContent.Wall;
         private grid: GridCell[] = [];
         private actionsCount: number = 0;
-        private cat: Cat = new Cat(0, this.grid);
+        private cat: Cat | null = null;
         private gameLoopInterval: any = null;
 
         private onPlayStopClicked(): void {
             if (this.gameLoopInterval) {
-                clearInterval(this.gameLoopInterval);
-                this.gameLoopInterval = null;
+                this.endGameLoop();
             } else {
-                this.cat.composeGraph();
+                if (this.cat === null) {
+                    return;
+                }
+                this.cat.start();
                 this.gameLoopInterval = setInterval(() => {
                     this.gameLoop();
                 }, 500);
@@ -87,19 +90,54 @@
 
         private onCellClicked(cell: GridCell): void {
             if (this.elementSelected === CellContent.Cat) {
-                this.cat = new Cat(cell.position, this.grid);
+                this.cat = new Cat(cell, this.grid);
             }
             this.changeCellContent(cell.position, this.elementSelected);
         }
 
         private changeCellContent(targetPosition: number, content: CellContent) {
+            this.newAction.type = MazeGridActionType.ContentChange;
             this.newAction.targetPosition = targetPosition;
             this.newAction.newContent = content;
             Vue.set(this.newAction, 'id', ++this.actionsCount);
         }
 
+        private toggleCellSpin(targetPosition: number) {
+            this.newAction.type = MazeGridActionType.ToggleRotation;
+            this.newAction.targetPosition = targetPosition;
+            Vue.set(this.newAction, 'id', ++this.actionsCount);
+        }
+
+        private endGameLoop(): void {
+            if (this.gameLoopInterval === null) {
+                return;
+            }
+
+            clearInterval(this.gameLoopInterval);
+            this.gameLoopInterval = null;
+
+            const mouse: GridCell | undefined = this.grid.find((cell: GridCell) => cell.content === CellContent.Mouse);
+            const cat: GridCell | undefined = this.grid.find((cell: GridCell) => cell.content === CellContent.Cat);
+            if (cat === undefined) {
+                return;
+            }
+
+            const isMouseAlive: boolean = mouse !== undefined;
+
+            // @ts-ignore
+            isMouseAlive ? this.toggleCellSpin(mouse.position) : this.toggleCellSpin(cat.position);
+        }
+
         private gameLoop(): void {
-            this.changeCellContent(this.cat.getNewPosition(), CellContent.Cat);
+            if (this.cat === null) {
+                return;
+            }
+
+            const nextCatPosition: number = this.cat.getNewPosition();
+
+            nextCatPosition === -1
+                ? this.endGameLoop()
+                : this.changeCellContent(nextCatPosition, CellContent.Cat);
         }
     }
 </script>

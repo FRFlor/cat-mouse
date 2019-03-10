@@ -3,7 +3,7 @@
          :style="`grid-template-columns: repeat(${this.columnCount}, auto)`">
         <maze-cell v-for="(cell, position) in cells"
                    :key="position"
-                   :content="cell.content"
+                   :cell-data="cell"
                    @click="onCellClicked(cell)"
                    class="maze-cell">
         </maze-cell>
@@ -17,15 +17,22 @@
 
     export {CellContent};
 
+    export enum MazeGridActionType {
+        ContentChange,
+        ToggleRotation,
+    }
+
     export interface MazeGridAction {
         id: number;
         targetPosition: number;
-        newContent: CellContent;
+        type: MazeGridActionType;
+        newContent?: CellContent;
     }
 
     export const EMPTY_ACTION: MazeGridAction = {
         id: -1,
         targetPosition: -1,
+        type: MazeGridActionType.ContentChange,
         newContent: CellContent.Nothing,
     };
 
@@ -43,7 +50,24 @@
 
         // Watchers
         @Watch('actionRequest.id')
-        public changeCellContent(): void {
+        public onNewActionRequested(): void {
+            switch (this.actionRequest.type) {
+                case MazeGridActionType.ContentChange:
+                    return this.changeCellContent();
+                case MazeGridActionType.ToggleRotation:
+                    return this.toggleRotationOnCell();
+                default:
+                    return;
+            }
+        }
+
+        private changeCellContent(): void {
+            const newContent: CellContent | undefined = this.actionRequest.newContent;
+
+            if (newContent === undefined) {
+                throw new DOMException('Cell content cannot be changed to undefined');
+            }
+
             if (this.actionRequest.newContent === CellContent.Cat) {
                 this.removeAll(CellContent.Cat);
             }
@@ -52,7 +76,12 @@
                 this.removeAll(CellContent.Mouse);
             }
 
-            this.cells[this.actionRequest.targetPosition].content = this.actionRequest.newContent;
+            this.cells[this.actionRequest.targetPosition].content = newContent;
+        }
+
+        private toggleRotationOnCell(): void {
+            this.cells[this.actionRequest.targetPosition].isSpinning =
+                !this.cells[this.actionRequest.targetPosition].isSpinning;
         }
 
         @Watch('gridSize')

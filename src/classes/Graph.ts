@@ -4,15 +4,11 @@ import GraphNode from './GraphNode';
 import {CellContent} from '../components/MazeGrid.vue';
 
 export default class Graph {
-    private nodes: GraphNode[] = [];
+    public nodes: GraphNode[] = [];
     private grid: GridCell[];
 
     constructor(referenceGrid: GridCell[]) {
         this.grid = referenceGrid;
-    }
-
-    private get gridSize(): number {
-        return Math.floor(this.grid.length ** 0.5);
     }
 
     public compose() {
@@ -32,5 +28,29 @@ export default class Graph {
                 }
             });
         });
+    }
+
+    public toGraphNode(source: GridCell): GraphNode {
+        const conversion: GraphNode | undefined = this.nodes.find((node: GraphNode) => {
+            return node.cell.position === source.position;
+        });
+
+        if (conversion === undefined) {
+            throw new DOMException('Impossible conversion from GridCell to GraphNode');
+        }
+
+        return conversion;
+    }
+
+    public toGridCell(source: GraphNode): GridCell {
+        const conversion: GridCell | undefined = this.grid.find((gridCell: GridCell) => {
+            return gridCell.position === source.cell.position;
+        });
+
+        if (conversion === undefined) {
+            throw new DOMException('Impossible conversion from GraphNode to GridCell');
+        }
+
+        return conversion;
     }
 }
