@@ -46,6 +46,10 @@
                          @click="elementSelected = CellContent.Milk"
                          id="milk-select"
                          src="../assets/milk.svg" height="50" alt="milk-select">
+                    <div :class="{'selected' : elementSelected === CellContent.Nothing}"
+                         @click="elementSelected = CellContent.Nothing"
+                         id="nothing-select">
+                    </div>
                 </div>
             </div>
         </div>
@@ -163,6 +167,8 @@
         width: 100%;
     }
 
+
+
     .maze-manager {
         width: 18rem;
         font-size: 0.85rem;
@@ -181,13 +187,18 @@
                 font-size: 1rem;
             }
             .options {
-                img {
+                img, #nothing-select {
                     &:hover {
                         cursor: pointer;
                     }
                     &.selected {
                         border: #7ec4ff 5px solid;
                     }
+                }
+                #nothing-select {
+                    height: 50px;
+                    width: 50px;
+                    background: #aac6ff;
                 }
                 display: flex;
                 justify-content: space-between;
