@@ -100,18 +100,20 @@
             if (this.gameLoopInterval) {
                 this.endGameLoop();
             } else {
-                this.restartCat();
                 if (this.catCell === undefined) {
                     return;
                 }
                 this.gameLoopInterval = setInterval(() => {
                     this.gameLoop();
                 }, 350);
+
+                this.restartCat();
             }
         }
 
         private restartCat(): void {
-            if (! this.catCell || !this.mouseCell) {
+            if (! this.catCell || !this.mouseCell || !this.gameLoopInterval) {
+                console.log('ignoed');
                 return;
             }
             this.cat = new Cat(this.catCell, this.grid);
