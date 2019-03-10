@@ -49,16 +49,15 @@
                 </div>
             </div>
         </div>
-        <maze-grid :grid-size="gridSize"
-                   :action-request="newAction"
+        <maze-grid :cells="grid"
                    @grid-state-changed="(newState) => grid = newState"
                    @cell-clicked="onCellClicked"/>
     </div>
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
-    import MazeGrid, {CellContent, EMPTY_ACTION, MazeGridAction, MazeGridActionType} from './MazeGrid.vue';
+    import {Component, Vue, Watch} from 'vue-property-decorator';
+    import MazeGrid, {CellContent} from './MazeGrid.vue';
     import Cat from '../classes/Cat';
     import GridCell from '../classes/GridCell';
 
@@ -67,20 +66,41 @@
         private CellContent = CellContent;
 
         private gridSize: number = 10;
-        private newAction: MazeGridAction = EMPTY_ACTION;
         private elementSelected: CellContent = CellContent.Wall;
         private grid: GridCell[] = [];
-        private actionsCount: number = 0;
         private cat: Cat | null = null;
         private gameLoopInterval: any = null;
 
+        private created(): void {
+            this.populateGridWithEmptyCells();
+        }
+
+        private removeAll(contentToDelete: CellContent): void {
+            this.grid.forEach((cell: GridCell) => {
+                if (cell.content === contentToDelete) {
+                    cell.content = CellContent.Nothing;
+                }
+            });
+        }
+
+        @Watch('gridSize')
+        private populateGridWithEmptyCells(): void {
+            this.grid = 'x'.repeat(this.gridSize ** 2).split('')
+                .map((_: any, position: number) => new GridCell(position));
+            GridCell.gridSize = this.gridSize;
+        }
+
         private onPlayStopClicked(): void {
+            this.stopSpinningAnimations();
+
             if (this.gameLoopInterval) {
                 this.endGameLoop();
             } else {
-                if (this.cat === null) {
+                const catCell: GridCell | undefined = this.grid.find((cell: GridCell) => cell.content === CellContent.Cat);
+                if (catCell === undefined) {
                     return;
                 }
+                this.cat = new Cat(catCell, this.grid);
                 this.cat.start();
                 this.gameLoopInterval = setInterval(() => {
                     this.gameLoop();
@@ -89,23 +109,17 @@
         }
 
         private onCellClicked(cell: GridCell): void {
+            this.stopSpinningAnimations();
+
             if (this.elementSelected === CellContent.Cat) {
-                this.cat = new Cat(cell, this.grid);
+                this.removeAll(CellContent.Cat);
             }
-            this.changeCellContent(cell.position, this.elementSelected);
-        }
 
-        private changeCellContent(targetPosition: number, content: CellContent) {
-            this.newAction.type = MazeGridActionType.ContentChange;
-            this.newAction.targetPosition = targetPosition;
-            this.newAction.newContent = content;
-            Vue.set(this.newAction, 'id', ++this.actionsCount);
-        }
+            if (this.elementSelected === CellContent.Mouse) {
+                this.removeAll(CellContent.Mouse);
+            }
 
-        private toggleCellSpin(targetPosition: number) {
-            this.newAction.type = MazeGridActionType.ToggleRotation;
-            this.newAction.targetPosition = targetPosition;
-            Vue.set(this.newAction, 'id', ++this.actionsCount);
+            cell.content = this.elementSelected;
         }
 
         private endGameLoop(): void {
@@ -125,7 +139,7 @@
             const isMouseAlive: boolean = mouse !== undefined;
 
             // @ts-ignore
-            isMouseAlive ? this.toggleCellSpin(mouse.position) : this.toggleCellSpin(cat.position);
+            isMouseAlive ? (mouse.isSpinning = true) : (cat.isSpinning = true);
         }
 
         private gameLoop(): void {
@@ -133,11 +147,13 @@
                 return;
             }
 
-            const nextCatPosition: number = this.cat.getNewPosition();
+            if (!this.cat.move()) {
+                this.endGameLoop();
+            }
+        }
 
-            nextCatPosition === -1
-                ? this.endGameLoop()
-                : this.changeCellContent(nextCatPosition, CellContent.Cat);
+        private stopSpinningAnimations(): void {
+            this.grid.forEach((cell: GridCell) => cell.isSpinning = false);
         }
     }
 </script>

@@ -11,6 +11,9 @@ const NOT_SET = -1;
 
 export default class PathFinder {
     public static getPath(from: GraphNode, to: GraphNode, graph: Graph): GraphNode[] {
+        PathFinder.pathNodes = [];
+        PathFinder.visitQueue = [];
+
         const path: GraphNode[] = [];
 
         graph.nodes.forEach((node: GraphNode) => {

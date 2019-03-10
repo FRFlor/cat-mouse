@@ -6,28 +6,37 @@ import PathFinder from '@/classes/PathFinder';
 import GraphNode from '@/classes/GraphNode';
 
 export default class Cat {
+    public cell: GridCell;
     private grid: GridCell[];
-    private startCell: GridCell;
     private graph: Graph;
     private desiredPath: GridCell[] = [];
 
     constructor(startCatCell: GridCell, grid: GridCell[]) {
         this.grid = grid;
-        this.startCell = startCatCell;
+        this.cell = startCatCell;
         this.graph = new Graph(this.grid);
     }
 
-    public getNewPosition(): number {
+    // Moves the cat towards the target
+    // Returns FALSE if the cat can no longer move
+    public move(): boolean {
         const nextCellToMove: GridCell | undefined = this.desiredPath.shift();
 
-        return  nextCellToMove === undefined ? -1 : nextCellToMove.position;
+        if (nextCellToMove === undefined) {
+            return false;
+        }
+
+        this.cell.content = CellContent.Nothing;
+        nextCellToMove.content = CellContent.Cat;
+        this.cell = nextCellToMove;
+
+        return true;
     }
 
     public start() {
         this.graph.compose();
         const ratCell: GridCell | undefined = this.grid.find((cell: GridCell) => cell.content === CellContent.Mouse);
-        const catCell: GridCell = this.startCell;
-
+        const catCell: GridCell = this.cell;
         if (ratCell === undefined) {
             throw new DOMException('A rat must be present on the grid!');
         }
