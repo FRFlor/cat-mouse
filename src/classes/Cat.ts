@@ -69,25 +69,16 @@ export default class Cat {
     }
 
     private getShortestPath(): GridCell[] {
-        // If there's a single milk or less, there's only one path possible.
-        // Which is towards the lonely milk then the mouse.
-        if (this.milkCells.length <= 1) {
-            if (this.mouseCell === undefined) {
-                return [];
-            }
-
-            const milkCell: GridCell | undefined = this.milkCells.shift();
-            if (milkCell === undefined) {
-                return this.getPath(this.cell, this.mouseCell);
-            }
-
-            return [
-                ...this.getPath(this.cell, milkCell),
-                ...this.getPath(milkCell, this.mouseCell),
-            ];
+        // With no mouse, there's no path
+        if (this.mouseCell === undefined) {
+            return [];
         }
 
-        // With milk on the grid, things get interesting!
+        // With just a mouse, there's only one obvious shortest path
+        const milkCell: GridCell | undefined = this.milkCells.shift();
+        if (milkCell === undefined) {
+            return this.getPath(this.cell, this.mouseCell);
+        }
 
         const allStrategies: MoveStrategy[] = [];
 
@@ -99,6 +90,15 @@ export default class Cat {
             targets.push(this.mouseCell); // The mouse is always the last target
             allStrategies.push({
                 targets,
+                path: [],
+            });
+        }
+
+        // If there were no permutations generated
+        // it means that there's only a single milk and a mouse.
+        if (allStrategies.length === 0) {
+            allStrategies.push({
+                targets: [milkCell, this.mouseCell],
                 path: [],
             });
         }

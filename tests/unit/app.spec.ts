@@ -18,9 +18,8 @@ describe('Cat and Mouse', () => {
     const expectElementAt = (elementName: string, row: number, column: number) => {
         const position: number = column + row * currentGridSize();
 
-        expect(
-            wrapper.findAll('.maze-cell').at(position).find(`.${elementName}-cell-image`).exists()
-        ).to.equal(true);
+        expect(wrapper.findAll('.maze-cell').at(position)
+                .find(`.${elementName}-cell-image`).exists()).to.equal(true);
     };
 
     const tickOneTurn = () => {
@@ -185,5 +184,31 @@ describe('Cat and Mouse', () => {
         expectElementAt('cat', 1, 0);
 
         expect(wrapper.findAll('.mouse-cell-image').length).to.equal(0);
+    });
+
+    it('Does not move back to the mouse corpse if the mouse happen to be in the optimal way for the milk', () => {
+        placeElementAt('cat', 0, 0);
+        placeElementAt('mouse', 0, 2);
+        placeElementAt('milk', 0, 3);
+
+
+        wrapper.find('#play-stop').trigger('click');
+
+
+        // Expect the cat to move for the milk first
+        [1, 2, 3].forEach((column: number) => {
+            tickOneTurn();
+            expectElementAt('cat', 0, column);
+        });
+
+        expect(wrapper.findAll('.milk-cell-image').length).to.equal(0);
+
+        // At this point, since the mouse was in the milk path. It was already consumed
+        // The cat won and should no longer move
+        expectElementAt('cat', 0, 3);
+        tickOneTurn();
+        expectElementAt('cat', 0, 3);
+        tickOneTurn();
+        expectElementAt('cat', 0, 3);
     });
 });
