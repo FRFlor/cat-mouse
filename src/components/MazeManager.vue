@@ -22,6 +22,7 @@
 
                 <div>
                     <button @click="onPlayStopClicked"
+                            :disabled="! canStartGame"
                             v-text="gameLoopInterval ? 'Stop' : 'Play'">Play
                     </button>
                 </div>
@@ -97,7 +98,7 @@
         private onPlayStopClicked(): void {
             this.stopSpinningAnimations();
 
-            if (this.gameLoopInterval) {
+            if (this.isGameRunning) {
                 this.endGameLoop();
             } else {
                 if (this.catCell === undefined) {
@@ -112,8 +113,7 @@
         }
 
         private restartCat(): void {
-            if (! this.catCell || !this.mouseCell || !this.gameLoopInterval) {
-                console.log('ignoed');
+            if (!this.catCell || !this.mouseCell || !this.gameLoopInterval) {
                 return;
             }
             this.cat = new Cat(this.catCell, this.grid);
@@ -131,12 +131,18 @@
                 this.removeAll(CellContent.Mouse);
             }
 
+            // Do not let user erase cat or mouse
+            if (this.isGameRunning &&
+                (cell.content === CellContent.Cat || cell.content === CellContent.Mouse)) {
+                return;
+            }
+
             cell.content = this.elementSelected;
             this.restartCat();
         }
 
         private endGameLoop(): void {
-            if (this.gameLoopInterval === null) {
+            if (! this.isGameRunning) {
                 return;
             }
 
@@ -174,6 +180,14 @@
         private get mouseCell(): GridCell | undefined {
             return this.grid.find((cell: GridCell) => cell.content === CellContent.Mouse);
         }
+
+        private get canStartGame(): boolean {
+            return !this.isGameRunning && (!!this.mouseCell && !!this.catCell);
+        }
+
+        private get isGameRunning(): boolean {
+            return !!this.gameLoopInterval;
+        }
     }
 </script>
 
@@ -181,8 +195,6 @@
     #get-example {
         width: 100%;
     }
-
-
 
     .maze-manager {
         width: 18rem;
