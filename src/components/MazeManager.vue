@@ -5,7 +5,7 @@
                 <div>
                     <div>
                         <button>Load</button>
-                        <button>Export</button>
+                        <button @click="onExportClicked">Export</button>
                     </div>
                     <button id="get-example">Get Example</button>
                 </div>
@@ -23,6 +23,7 @@
                 <div>
                     <button @click="onPlayStopClicked"
                             :disabled="! canStartGame"
+                            id="play-stop"
                             v-text="gameLoopInterval ? 'Stop' : 'Play'">Play
                     </button>
                 </div>
@@ -65,6 +66,8 @@
     import MazeGrid, {CellContent} from './MazeGrid.vue';
     import Cat from '../classes/Cat';
     import GridCell from '../classes/GridCell';
+    // @ts-ignore
+    import { save } from 'save-file';
 
     @Component({components: {MazeGrid}})
     export default class MazeManager extends Vue {
@@ -110,6 +113,10 @@
 
                 this.restartCat();
             }
+        }
+
+        private async onExportClicked(): Promise<void> {
+            await save(JSON.stringify(this.grid), 'example.txt');
         }
 
         private restartCat(): void {

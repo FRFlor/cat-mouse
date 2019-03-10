@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "array-permutation": "^0.2.0",
+    "save-file": "^2.3.1",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0"
@@ -25,6 +26,7 @@
     "chai": "^4.1.2",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
+    "sinon": "^4.4.6",
     "typescript": "^3.2.1",
     "vue-template-compiler": "^2.5.21"
   }
