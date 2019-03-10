@@ -1,10 +1,10 @@
 <template>
     <div class="maze-grid"
          :style="`grid-template-columns: repeat(${this.columnCount}, auto)`">
-        <maze-cell v-for="(content, position) in cellsContent"
+        <maze-cell v-for="(cell, position) in cells"
                    :key="position"
-                   :content="content"
-                   @click="onCellClicked({content, position})"
+                   :content="cell.content"
+                   @click="onCellClicked(cell)"
                    class="maze-cell">
         </maze-cell>
     </div>
@@ -13,25 +13,20 @@
 <script lang="ts">
     import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
     import MazeCell, {CellContent} from './MazeCell.vue';
+    import GridCell from '../classes/GridCell';
 
     export {CellContent};
 
-    export interface CellData {
-        content: CellContent;
-        position: number;
-    }
-
     export interface MazeGridAction {
         id: number;
-        cellData: CellData;
+        targetPosition: number;
+        newContent: CellContent;
     }
 
     export const EMPTY_ACTION: MazeGridAction = {
         id: -1,
-        cellData: {
-            content: CellContent.Nothing,
-            position: -1,
-        },
+        targetPosition: -1,
+        newContent: CellContent.Nothing,
     };
 
     @Component({components: {MazeCell}})
@@ -40,7 +35,7 @@
         @Prop({default: () => EMPTY_ACTION}) private actionRequest!: MazeGridAction;
 
         // Properties
-        private cellsContent: CellContent[] = [];
+        private cells: GridCell[] = [];
 
         private get columnCount(): number {
             return this.gridSize;
@@ -49,29 +44,24 @@
         // Watchers
         @Watch('actionRequest.id')
         public changeCellContent(): void {
-            if (this.actionRequest.cellData.content === CellContent.Cat) {
+            if (this.actionRequest.newContent === CellContent.Cat) {
                 this.removeAll(CellContent.Cat);
             }
 
-            if (this.actionRequest.cellData.content === CellContent.Mouse) {
+            if (this.actionRequest.newContent === CellContent.Mouse) {
                 this.removeAll(CellContent.Mouse);
             }
 
-            Vue.set(
-                this.cellsContent,
-                this.actionRequest.cellData.position,
-                this.actionRequest.cellData.content,
-            );
+            this.cells[this.actionRequest.targetPosition].content = this.actionRequest.newContent;
         }
 
         @Watch('gridSize')
         private populateGridWithEmptyCells(): void {
-            this.cellsContent = 'x'.repeat(this.gridSize ** 2).split('').map(() => CellContent.Nothing);
-        }
+            this.cells = 'x'.repeat(this.gridSize ** 2).split('')
+                .map((_: any, position: number) => new GridCell(position));
+            GridCell.gridSize = this.gridSize;
 
-        @Watch('cellsContent')
-        private notifyOfGridChange(): void {
-            this.$emit('grid-state-changed', this.cellsContent);
+            this.$emit('grid-state-changed', this.cells);
         }
 
         // Event Handlers
@@ -79,14 +69,14 @@
             this.populateGridWithEmptyCells();
         }
 
-        private onCellClicked(currentState: CellData): void {
-            this.$emit('cell-clicked', currentState);
+        private onCellClicked(cell: GridCell): void {
+            this.$emit('cell-clicked', cell);
         }
 
-        private removeAll(target: CellContent): void {
-            this.cellsContent.forEach((cellContent: CellContent, index: number) => {
-                if (cellContent === target) {
-                    this.cellsContent[index] = CellContent.Nothing;
+        private removeAll(contentToDelete: CellContent): void {
+            this.cells.forEach((cell: GridCell) => {
+                if (cell.content === contentToDelete) {
+                    cell.content = CellContent.Nothing;
                 }
             });
         }

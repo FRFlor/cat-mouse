@@ -12,11 +12,11 @@
     import {Component, Prop, Vue} from 'vue-property-decorator';
 
     export enum CellContent {
-        Nothing,
-        Wall,
-        Cat,
-        Mouse,
-        Milk,
+        Nothing = '',
+        Wall = 'Wall',
+        Cat = 'Cat',
+        Mouse = 'Mouse',
+        Milk = 'Milk',
     }
 
     @Component

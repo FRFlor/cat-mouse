@@ -57,8 +57,9 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import MazeGrid, {CellContent, CellData, EMPTY_ACTION, MazeGridAction} from './MazeGrid.vue';
+    import MazeGrid, {CellContent, EMPTY_ACTION, MazeGridAction} from './MazeGrid.vue';
     import Cat from '../classes/Cat';
+    import GridCell from '../classes/GridCell';
 
     @Component({components: {MazeGrid}})
     export default class MazeManager extends Vue {
@@ -67,7 +68,7 @@
         private gridSize: number = 10;
         private newAction: MazeGridAction = EMPTY_ACTION;
         private elementSelected: CellContent = CellContent.Wall;
-        private grid: CellContent[] = [];
+        private grid: GridCell[] = [];
         private actionsCount: number = 0;
         private cat: Cat = new Cat(0, this.grid);
         private gameLoopInterval: any = null;
@@ -77,21 +78,23 @@
                 clearInterval(this.gameLoopInterval);
                 this.gameLoopInterval = null;
             } else {
+                this.cat.composeGraph();
                 this.gameLoopInterval = setInterval(() => {
                     this.gameLoop();
                 }, 500);
             }
         }
 
-        private onCellClicked(currentState: CellData): void {
+        private onCellClicked(cell: GridCell): void {
             if (this.elementSelected === CellContent.Cat) {
-                this.cat = new Cat(currentState.position, this.grid);
+                this.cat = new Cat(cell.position, this.grid);
             }
-            this.changeCellContent(currentState.position, this.elementSelected);
+            this.changeCellContent(cell.position, this.elementSelected);
         }
 
-        private changeCellContent(position: number, content: CellContent) {
-            this.newAction.cellData = {position, content};
+        private changeCellContent(targetPosition: number, content: CellContent) {
+            this.newAction.targetPosition = targetPosition;
+            this.newAction.newContent = content;
             Vue.set(this.newAction, 'id', ++this.actionsCount);
         }
 
