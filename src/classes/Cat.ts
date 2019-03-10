@@ -23,7 +23,19 @@ export default class Cat {
         const nextCellToMove: GridCell | undefined = this.desiredPath.shift();
 
         if (nextCellToMove === undefined) {
-            return false;
+            if (this.thereAreNoTargetsLeft) {
+                return false;
+            }
+
+            if (this.milkCells.length > 0) {
+                // @ts-ignore
+                this.setCourseTo(this.milkCells.shift());
+                return this.move();
+            }
+
+            // @ts-ignore
+            this.setCourseTo(this.mouseCell);
+            return this.move();
         }
 
         this.cell.content = CellContent.Nothing;
@@ -33,17 +45,27 @@ export default class Cat {
         return true;
     }
 
+    private get thereAreNoTargetsLeft(): boolean {
+        return this.milkCells.length === 0 && this.mouseCell === undefined;
+    }
+
+    private get milkCells(): GridCell[] {
+        return this.grid.filter((cell: GridCell) => cell.content === CellContent.Milk);
+    }
+
+    private get mouseCell(): GridCell | undefined {
+        return this.grid.find((cell: GridCell) => cell.content === CellContent.Mouse);
+    }
+
     public start() {
         this.graph.compose();
-        const ratCell: GridCell | undefined = this.grid.find((cell: GridCell) => cell.content === CellContent.Mouse);
-        const catCell: GridCell = this.cell;
-        if (ratCell === undefined) {
-            throw new DOMException('A rat must be present on the grid!');
-        }
+        this.desiredPath = [];
+    }
 
+    public setCourseTo(targetCell: GridCell) {
         this.desiredPath = PathFinder.getPath(
-            this.graph.toGraphNode(catCell),
-            this.graph.toGraphNode(ratCell),
+            this.graph.toGraphNode(this.cell),
+            this.graph.toGraphNode(targetCell),
             this.graph,
         ).map((graphNode: GraphNode) => this.graph.toGridCell(graphNode));
     }
