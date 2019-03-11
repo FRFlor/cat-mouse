@@ -4,8 +4,7 @@
         <maze-cell v-for="(cell, position) in cells"
                    :key="position"
                    :cell-data="cell"
-                   @click="onCellClicked(cell)"
-                   class="maze-cell">
+                   @click="onCellClicked(cell)">
         </maze-cell>
     </div>
 </template>
