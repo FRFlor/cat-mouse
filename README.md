@@ -13,6 +13,10 @@ following the path that requires the least amount of moves.
 The cat will aim to catch the mouse last. The only way for the mouse
 not die last, is if the mouse is in the way of the cat's milk path. 
 
+### Try it out here! 
+
+http://catmouse.felipeflor.com
+
 ### Key points
 - Breadth First Search (Path Finding Algorithm)
 - Typescript Vue
