@@ -1,6 +1,6 @@
 <template>
     <v-footer class="grey darken-3"
-              inset dark app>
+              inset dark>
         <v-spacer></v-spacer>
         <v-btn class="grey darken-3 mr-5 elevation-0"
                href="https://www.felipeflor.com"

@@ -17,7 +17,7 @@
 
             <v-list-tile-content>
                 <v-list-tile-title>
-                    {{credit.authorName}}
+                    by {{credit.authorName}}
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
                     {{credit.title}} (CC BY 3.0)

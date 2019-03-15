@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <v-app id="catmouse">
-            <v-toolbar dark class="blue darken-2" dense scroll-off-screen app>
+            <v-toolbar dark class="blue darken-2" dense>
                 <v-toolbar-title>Cat & Mouse!</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn @click.stop="drawer = ! drawer" flat>List of Assets</v-btn>
