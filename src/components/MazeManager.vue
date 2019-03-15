@@ -29,24 +29,23 @@
                 </div>
             </div>
 
-            <v-layout row>
-                <v-flex xs12 sm6 class="py-2">
-                    <p>Select an element to place</p>
-                    <v-btn-toggle v-model="elementSelectedIndex" mandatory>
-                        <v-btn v-for="element in ['wall', 'cat', 'mouse', 'milk']">
-                            <img :src="require(`@/assets/${element}.svg`)"
-                                 :alt="`${element}-select`"
-                                 :id="`${element}-select`"
-                                 height="20">
-                        </v-btn>
-                        <v-btn>
-                            Erase
-                        </v-btn>
-                    </v-btn-toggle>
-                </v-flex>
-            </v-layout>
         </div>
-        <div class="maze-grid-container">
+        <div class="maze-grid-container pa-2">
+            <v-btn-toggle v-model="elementSelectedIndex" class="element-selector mr-2" mandatory>
+                <v-btn large v-for="element in ['wall', 'cat', 'mouse', 'milk']"
+                       :id="`${element}-select`"
+                       class="element-button grey lighten-2">
+                    <img :src="require(`@/assets/${element}.svg`)"
+                         :alt="`${element}-select`"
+                         height="35">
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn large class="element-button grey lighten-2">
+                    <v-layout column align-center justify-center>
+                        <v-icon class="red--text text--darken-3">fas fa-trash-alt</v-icon>
+                    </v-layout>
+                </v-btn>
+            </v-btn-toggle>
             <maze-grid :cells="grid"
                        @grid-state-changed="(newState) => grid = newState"
                        @cell-clicked="onCellClicked"/>
@@ -204,12 +203,24 @@
 </script>
 
 <style scoped lang="scss">
+    .element-selector {
+        max-height: 320px;
+        flex-direction: column;
+        align-items: center;
+        .element-button {
+            width: 55px;
+            height: 55px;
+        }
+
+    }
+
     .hud {
         max-width: 30rem;
     }
 
     .maze-grid-container {
         overflow-x: auto;
+        display: flex;
     }
 
     .maze-manager {
