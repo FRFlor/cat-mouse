@@ -1,46 +1,46 @@
 <template>
     <div class="maze-manager">
-        <div class="hud mb-3">
-            <div class="configurations">
-                <div>
-                    <div>
-                        <button>Load</button>
-                        <button @click="onExportClicked">Export</button>
-                    </div>
-                    <button id="get-example">Get Example</button>
-                </div>
-                <div>
-                    <span class="grid-size-label">Grid Size</span>
-                    <button id="decrease-maze-size"
-                            :disabled="gridSize <= 7"
-                            @click="gridSize--">-
-                    </button>
-                    <button id="increase-maze-size"
-                            @click="gridSize++">+
-                    </button>
-                </div>
-
-                <div>
-                    <button @click="onPlayStopClicked"
-                            :disabled="! canStartGame"
-                            id="play-stop"
-                            v-text="gameLoopInterval ? 'Stop' : 'Play'">Play
-                    </button>
-                </div>
-            </div>
-
-        </div>
-        <div class="maze-grid-container pa-2">
+        <v-layout class="top-toolbar mb-2" row align-center>
+            <v-btn id="decrease-maze-size"
+                   class="ma-0"
+                   outline color="red lighten-2"
+                   :disabled="gridSize <= 7"
+                   @click="gridSize--">
+                <v-layout align-center justify-center pt-2>
+                    <v-icon size="14px">fas fa-th-large</v-icon>
+                    <v-icon class="pl-1 pb-3" size="12px">fas fa-compress-arrows-alt</v-icon>
+                </v-layout>
+            </v-btn>
+            <v-btn id="increase-maze-size"
+                   class="ma-0"
+                   outline color="teal lighten-2"
+                   @click="gridSize++">
+                <v-layout align-center justify-center pt-2>
+                    <v-icon size="14px">fas fa-th-large</v-icon>
+                    <v-icon class="pl-1 pb-3" size="12px">fas fa-expand-arrows-alt</v-icon>
+                </v-layout>
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn @click="onPlayStopClicked"
+                   :disabled="! canStartGame"
+                   class="ml-4"
+                   id="play-stop"
+                   outline :color="isGameRunning ? 'red' : 'green'">
+                <v-icon>{{isGameRunning ? 'fas fa-stop' : 'fas fa-play'}}</v-icon>
+            </v-btn>
+        </v-layout>
+        <div class="maze-grid-container px-2 pb-2">
             <v-btn-toggle v-model="elementSelectedIndex" class="element-selector mr-2" mandatory>
-                <v-btn large v-for="element in ['wall', 'cat', 'mouse', 'milk']"
+                <v-btn large v-for="(element, i) in ['wall', 'cat', 'mouse', 'milk']"
                        :id="`${element}-select`"
-                       class="element-button grey lighten-2">
+                       :key="i"
+                       class="element-button">
                     <img :src="require(`@/assets/${element}.svg`)"
                          :alt="`${element}-select`"
                          height="35">
                 </v-btn>
                 <v-spacer></v-spacer>
-                <v-btn large class="element-button grey lighten-2">
+                <v-btn large class="element-button">
                     <v-layout column align-center justify-center>
                         <v-icon class="red--text text--darken-3">fas fa-trash-alt</v-icon>
                     </v-layout>
@@ -207,11 +207,16 @@
         max-height: 320px;
         flex-direction: column;
         align-items: center;
-        .element-button {
-            width: 55px;
-            height: 55px;
-        }
+    }
 
+    .element-button {
+        width: 55px;
+        height: 55px;
+    }
+
+    .top-toolbar {
+        margin-left: 8px;
+        max-width: 320px;
     }
 
     .hud {
@@ -235,6 +240,12 @@
             .grid-size-label {
                 padding-right: 1rem;
             }
+        }
+    }
+
+    @media screen and (min-width: 425px) {
+        .top-toolbar {
+            margin-left: 71px;
         }
     }
 </style>
