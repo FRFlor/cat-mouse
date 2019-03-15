@@ -5,7 +5,8 @@
         <v-btn class="grey darken-3 mr-5 elevation-0"
                href="https://www.felipeflor.com"
                target="_blank"
-               round >Felipe Flor</v-btn>
+               round>Felipe Flor
+        </v-btn>
         <v-btn v-for="link in links"
                :key="link.icon"
                :href="link.destination"
@@ -44,9 +45,3 @@
         ];
     }
 </script>
-
-<style lang="scss" scoped>
-    .expander-section {
-        max-width: 450px;
-    }
-</style>
