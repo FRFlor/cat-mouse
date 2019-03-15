@@ -13,11 +13,11 @@
     import GridCell from '../classes/GridCell';
 
     export enum CellContent {
-        Nothing = 'Space',
-        Wall = 'Wall',
-        Cat = 'Cat',
-        Mouse = 'Mouse',
-        Milk = 'Milk',
+        Nothing = 'space',
+        Wall = 'wall',
+        Cat = 'cat',
+        Mouse = 'mouse',
+        Milk = 'milk',
     }
 
     @Component

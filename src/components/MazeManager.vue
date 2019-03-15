@@ -1,6 +1,6 @@
 <template>
     <div class="maze-manager">
-        <div class="hud">
+        <div class="hud mb-3">
             <div class="configurations">
                 <div>
                     <div>
@@ -29,31 +29,22 @@
                 </div>
             </div>
 
-            <div class="elements-selector">
-                <div>Select an element to place:</div>
-                <div class="options">
-                    <img :class="{'selected' : elementSelected === CellContent.Wall}"
-                         @click="elementSelected = CellContent.Wall"
-                         id="wall-select"
-                         src="../assets/wall.svg" height="50" alt="wall-select">
-                    <img :class="{'selected' : elementSelected === CellContent.Mouse}"
-                         @click="elementSelected = CellContent.Mouse"
-                         id="mouse-select"
-                         src="../assets/mouse.svg" height="50" alt="mouse-select">
-                    <img :class="{'selected' : elementSelected === CellContent.Cat}"
-                         @click="elementSelected = CellContent.Cat"
-                         id="cat-select"
-                         src="../assets/cat.svg" height="50" alt="cat-select">
-                    <img :class="{'selected' : elementSelected === CellContent.Milk}"
-                         @click="elementSelected = CellContent.Milk"
-                         id="milk-select"
-                         src="../assets/milk.svg" height="50" alt="milk-select">
-                    <div :class="{'selected' : elementSelected === CellContent.Nothing}"
-                         @click="elementSelected = CellContent.Nothing"
-                         id="nothing-select">
-                    </div>
-                </div>
-            </div>
+            <v-layout row>
+                <v-flex xs12 sm6 class="py-2">
+                    <p>Select an element to place</p>
+                    <v-btn-toggle v-model="elementSelectedIndex" mandatory>
+                        <v-btn v-for="element in ['wall', 'cat', 'mouse', 'milk']">
+                            <img :src="require(`@/assets/${element}.svg`)"
+                                 :alt="`${element}-select`"
+                                 :id="`${element}-select`"
+                                 height="20">
+                        </v-btn>
+                        <v-btn>
+                            Erase
+                        </v-btn>
+                    </v-btn-toggle>
+                </v-flex>
+            </v-layout>
         </div>
         <div class="maze-grid-container">
             <maze-grid :cells="grid"
@@ -69,17 +60,29 @@
     import Cat from '../classes/Cat';
     import GridCell from '../classes/GridCell';
     // @ts-ignore
-    import { save } from 'save-file';
+    import {save} from 'save-file';
 
     @Component({components: {MazeGrid}})
     export default class MazeManager extends Vue {
         private CellContent = CellContent;
 
+        private elementToSelect: CellContent[] = [
+            CellContent.Wall,
+            CellContent.Cat,
+            CellContent.Mouse,
+            CellContent.Milk,
+            CellContent.Nothing,
+        ];
+        private elementSelectedIndex: number = 4;
+
         private gridSize: number = 10;
-        private elementSelected: CellContent = CellContent.Wall;
         private grid: GridCell[] = [];
         private cat: Cat | null = null;
         private gameLoopInterval: any = null;
+
+        private get elementSelected(): CellContent {
+            return this.elementToSelect[this.elementSelectedIndex];
+        }
 
         private created(): void {
             this.populateGridWithEmptyCells();
@@ -151,7 +154,7 @@
         }
 
         private endGameLoop(): void {
-            if (! this.isGameRunning) {
+            if (!this.isGameRunning) {
                 return;
             }
 
@@ -201,54 +204,26 @@
 </script>
 
 <style scoped lang="scss">
-    #get-example {
-        width: 100%;
-    }
-
     .hud {
         max-width: 30rem;
     }
 
     .maze-grid-container {
-        overflow-x: scroll;
+        overflow-x: auto;
     }
 
     .maze-manager {
         min-width: 18rem;
         font-size: 0.85rem;
+
         .configurations {
             display: flex;
             justify-content: space-between;
             margin-bottom: 1rem;
+
             .grid-size-label {
                 padding-right: 1rem;
             }
-        }
-
-        .elements-selector {
-            > div {
-                margin-bottom: 1rem;
-                font-size: 1rem;
-            }
-            .options {
-                img, #nothing-select {
-                    &:hover {
-                        cursor: pointer;
-                    }
-                    &.selected {
-                        border: #7ec4ff 5px solid;
-                    }
-                }
-                #nothing-select {
-                    height: 50px;
-                    width: 50px;
-                    background: #aac6ff;
-                }
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            margin-bottom: 1rem;
         }
     }
 </style>
