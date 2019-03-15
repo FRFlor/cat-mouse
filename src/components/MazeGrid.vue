@@ -1,6 +1,6 @@
 <template>
     <div class="maze-grid"
-         :style="`grid-template-columns: repeat(${this.columnCount}, minmax(40px, 1fr))`">
+         :style="`grid-template-columns: repeat(${this.columnCount}, 40px)`">
         <maze-cell v-for="(cell, position) in cells"
                    :key="position"
                    :cell-data="cell"

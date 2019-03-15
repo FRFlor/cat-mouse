@@ -205,6 +205,10 @@
         width: 100%;
     }
 
+    .hud {
+        max-width: 30rem;
+    }
+
     .maze-grid-container {
         overflow-x: scroll;
     }

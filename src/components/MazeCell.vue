@@ -66,7 +66,7 @@
 
         img {
             max-width: 85%;
-            height: auto;
+            max-height: 85%;
         }
 
         &:hover {
