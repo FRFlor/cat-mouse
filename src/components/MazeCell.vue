@@ -54,7 +54,8 @@
         background: #aac6ff;
         border: rgba(103, 123, 166, 0.10) 1px solid;
         height: 40px;
-        width: 40px;
+        min-width: 40px;
+        max-width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;

@@ -55,9 +55,11 @@
                 </div>
             </div>
         </div>
-        <maze-grid :cells="grid"
-                   @grid-state-changed="(newState) => grid = newState"
-                   @cell-clicked="onCellClicked"/>
+        <div class="maze-grid-container">
+            <maze-grid :cells="grid"
+                       @grid-state-changed="(newState) => grid = newState"
+                       @cell-clicked="onCellClicked"/>
+        </div>
     </div>
 </template>
 
@@ -203,8 +205,12 @@
         width: 100%;
     }
 
+    .maze-grid-container {
+        overflow-x: scroll;
+    }
+
     .maze-manager {
-        width: 18rem;
+        min-width: 18rem;
         font-size: 0.85rem;
         .configurations {
             display: flex;

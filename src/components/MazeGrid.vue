@@ -1,6 +1,6 @@
 <template>
     <div class="maze-grid"
-         :style="`grid-template-columns: repeat(${this.columnCount}, auto)`">
+         :style="`grid-template-columns: repeat(${this.columnCount}, minmax(40px, 1fr))`">
         <maze-cell v-for="(cell, position) in cells"
                    :key="position"
                    :cell-data="cell"
@@ -33,5 +33,7 @@
 <style scoped lang="scss">
     .maze-grid {
         display: grid;
+        grid-column-gap: 0;
+        grid-row-gap: 0;
     }
 </style>
