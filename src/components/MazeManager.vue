@@ -1,43 +1,93 @@
 <template>
     <div class="maze-manager">
+        <v-dialog
+                v-model="showRulesModal"
+                max-width="420"
+        >
+            <v-card class="blue lighten-5">
+                <v-card-title
+                        class="headline blue darken-1 white--text"
+                        primary-title
+                >
+                    Instructions
+                </v-card-title>
+                <v-card-text>
+                    Use the vertical toolbar to build your maze and place the cat/mouse/milk anywhere in your maze.
+                </v-card-text>
+                <v-card-text>
+                    There must be at least one cat and one mouse for the simulation to start.
+                    The cat will get all the milk boxes and the mouse with the least amount of movements possible.
+                </v-card-text>
+                <v-card-text>
+                    Note: The cat will try its best to eat the mouse last.
+                </v-card-text>
+                <v-divider></v-divider>
+
+                <v-btn class="ma-0 blue darken-1 white--text"
+                       @click="showRulesModal = false"
+                       block>Got it!</v-btn>
+            </v-card>
+        </v-dialog>
+
         <v-layout class="top-toolbar mb-2" row wrap align-end>
-            <v-btn icon class="help-button ma-0 blue--text"><v-icon>fas fa-question-circle</v-icon></v-btn>
+            <v-btn class="help-button ma-0 blue--text"
+                   @click="showRulesModal = true"
+                   icon>
+                <v-icon>fas fa-question-circle</v-icon></v-btn>
             <div>
-                <v-btn id="decrease-maze-size"
-                       class="ma-0 ml-2"
-                       outline color="red lighten-2"
-                       :disabled="gridSize <= 7"
-                       @click="gridSize--">
-                    <v-layout align-center justify-center pt-2>
-                        <v-icon size="14px">fas fa-th-large</v-icon>
-                        <v-icon class="pl-1 pb-3" size="12px">fas fa-minus-circle</v-icon>
-                    </v-layout>
-                </v-btn>
-                <v-btn id="increase-maze-size"
-                       class="ma-0"
-                       outline color="teal lighten-2"
-                       @click="gridSize++">
-                    <v-layout align-center justify-center pt-2>
-                        <v-icon size="14px">fas fa-th</v-icon>
-                        <v-icon class="pl-1 pb-3" size="12px">fas fa-plus-circle</v-icon>
-                    </v-layout>
-                </v-btn>
+                <v-tooltip top>
+                    <v-btn id="decrease-maze-size"
+                           class="ma-0 ml-2"
+                           outline color="red lighten-2"
+                           :disabled="gridSize <= 7"
+                           slot="activator"
+                           @click="gridSize--">
+                        <v-layout align-center justify-center pt-2>
+                            <v-icon size="14px">fas fa-th-large</v-icon>
+                            <v-icon class="pl-1 pb-3" size="12px">fas fa-minus-circle</v-icon>
+                        </v-layout>
+                    </v-btn>
+                    <span>Decrease maze size</span>
+                </v-tooltip>
+
+                <v-tooltip top>
+                    <v-btn id="increase-maze-size"
+                           class="ma-0"
+                           slot="activator"
+                           outline color="teal lighten-2"
+                           @click="gridSize++">
+                        <v-layout align-center justify-center pt-2>
+                            <v-icon size="14px">fas fa-th</v-icon>
+                            <v-icon class="pl-1 pb-3" size="12px">fas fa-plus-circle</v-icon>
+                        </v-layout>
+                    </v-btn>
+                    <span>Increase maze size</span>
+                </v-tooltip>
             </div>
             <div>
-                <v-btn id="random-maze"
-                       class="mr-0 my-0"
-                       disabled
-                       outline color=""
-                       @click="">
-                    <v-icon size="14px">fas fa-dice</v-icon>
-                </v-btn>
-                <v-btn @click="onPlayStopClicked"
-                       :disabled="! canStartGame"
-                       class="ma-0"
-                       id="play-stop"
-                       outline :color="isGameRunning ? 'red' : 'green'">
-                    <v-icon>{{isGameRunning ? 'fas fa-stop' : 'fas fa-play'}}</v-icon>
-                </v-btn>
+                <v-tooltip top>
+                    <v-btn id="random-maze"
+                           class="mr-0 my-0"
+                           slot="activator"
+                           disabled
+                           outline color=""
+                           @click="">
+                        <v-icon size="14px">fas fa-dice</v-icon>
+                    </v-btn>
+                    <span>Generate random maze</span>
+                </v-tooltip>
+
+                <v-tooltip top>
+                    <v-btn @click="onPlayStopClicked"
+                           :disabled="! canStartGame"
+                           class="ma-0"
+                           slot="activator"
+                           id="play-stop"
+                           outline :color="isGameRunning ? 'red' : 'green'">
+                        <v-icon>{{isGameRunning ? 'fas fa-stop' : 'fas fa-play'}}</v-icon>
+                    </v-btn>
+                    <span>{{(catCell || mouseCell) === undefined ? 'A cat and a mouse must be placed in the maze' : 'Play!'}}</span>
+                </v-tooltip>
             </div>
         </v-layout>
         <div class="maze-grid-container pr-2 pb-2">
@@ -75,6 +125,7 @@
     @Component({components: {MazeGrid}})
     export default class MazeManager extends Vue {
         private CellContent = CellContent;
+        private showRulesModal: boolean = false;
 
         private elementToSelect: CellContent[] = [
             CellContent.Wall,
