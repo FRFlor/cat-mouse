@@ -25,7 +25,9 @@
 
                 <v-btn class="ma-0 blue darken-1 white--text"
                        @click="showRulesModal = false"
-                       block>Got it!</v-btn>
+                       block>
+                    Got it!
+                </v-btn>
             </v-card>
         </v-dialog>
 
@@ -33,7 +35,8 @@
             <v-btn class="help-button ma-0 blue--text"
                    @click="showRulesModal = true"
                    icon>
-                <v-icon>fas fa-question-circle</v-icon></v-btn>
+                <v-icon>fas fa-question-circle</v-icon>
+            </v-btn>
             <div>
                 <v-tooltip top>
                     <v-btn id="decrease-maze-size"
@@ -69,10 +72,12 @@
                     <v-btn id="random-maze"
                            class="mr-0 my-0"
                            slot="activator"
-                           disabled
-                           outline color=""
-                           @click="">
-                        <v-icon size="14px">fas fa-dice</v-icon>
+                           outline color="blue darken-1"
+                           @click="createRandomMaze">
+                        <v-layout align-center justify-center pt-2>
+                            <v-icon size="14px">fas fa-th</v-icon>
+                            <v-icon class="pl-1 pb-3" size="12px">fas fa-dice</v-icon>
+                        </v-layout>
                     </v-btn>
                     <span>Generate random maze</span>
                 </v-tooltip>
@@ -162,6 +167,14 @@
             this.grid = 'x'.repeat(this.gridSize ** 2).split('')
                 .map((_: any, position: number) => new GridCell(position));
             GridCell.gridSize = this.gridSize;
+        }
+
+        private createRandomMaze(): void {
+            this.grid = this.grid.map((_: GridCell, position: number) => {
+                return Math.random() < 0.3
+                    ? new GridCell(position, CellContent.Wall)
+                    : new GridCell(position);
+            });
         }
 
         private onPlayStopClicked(): void {
