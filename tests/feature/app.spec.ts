@@ -1,12 +1,16 @@
 import {expect} from 'chai';
+import Vue from 'vue';
 import {mount, Wrapper} from '@vue/test-utils';
 import MazeManager from '@/components/MazeManager.vue';
+import Vuetify from 'vuetify';
+
 // @ts-ignore
 import * as sinon from 'sinon';
 
 describe('Cat and Mouse', () => {
     let wrapper: Wrapper<MazeManager>;
     let clock: any;
+    Vue.use(Vuetify); // Source: https://github.com/vuetifyjs/vuetify/issues/5096#issuecomment-423300001
 
     const currentGridSize = (): number => Math.floor(wrapper.findAll('.maze-cell').length ** 0.5);
     const placeElementAt = (elementName: string, row: number, column: number) => {
@@ -19,7 +23,7 @@ describe('Cat and Mouse', () => {
         const position: number = column + row * currentGridSize();
 
         expect(wrapper.findAll('.maze-cell').at(position)
-                .find(`.${elementName}-cell-image`).exists()).to.equal(true);
+            .find(`.${elementName}-cell-image`).exists()).to.equal(true);
     };
 
     const tickOneTurn = () => {
