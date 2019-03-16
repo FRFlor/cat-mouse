@@ -1,35 +1,46 @@
 <template>
     <div class="maze-manager">
-        <v-layout class="top-toolbar mb-2" row align-end>
-            <v-btn id="decrease-maze-size"
-                   class="ma-0"
-                   outline color="red lighten-2"
-                   :disabled="gridSize <= 7"
-                   @click="gridSize--">
-                <v-layout align-center justify-center pt-2>
-                    <v-icon size="14px">fas fa-th-large</v-icon>
-                    <v-icon class="pl-1 pb-3" size="12px">fas fa-minus-circle</v-icon>
-                </v-layout>
-            </v-btn>
-            <v-btn id="increase-maze-size"
-                   class="ma-0"
-                   outline color="teal lighten-2"
-                   @click="gridSize++">
-                <v-layout align-center justify-center pt-2>
-                    <v-icon size="14px">fas fa-th</v-icon>
-                    <v-icon class="pl-1 pb-3" size="12px">fas fa-plus-circle</v-icon>
-                </v-layout>
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn @click="onPlayStopClicked"
-                   :disabled="! canStartGame"
-                   class="ml-4 mb-0"
-                   id="play-stop"
-                   outline :color="isGameRunning ? 'red' : 'green'">
-                <v-icon>{{isGameRunning ? 'fas fa-stop' : 'fas fa-play'}}</v-icon>
-            </v-btn>
+        <v-layout class="top-toolbar mb-2" row wrap align-end>
+            <v-btn icon class="help-button ma-0 blue--text"><v-icon>fas fa-question-circle</v-icon></v-btn>
+            <div>
+                <v-btn id="decrease-maze-size"
+                       class="ma-0 ml-2"
+                       outline color="red lighten-2"
+                       :disabled="gridSize <= 7"
+                       @click="gridSize--">
+                    <v-layout align-center justify-center pt-2>
+                        <v-icon size="14px">fas fa-th-large</v-icon>
+                        <v-icon class="pl-1 pb-3" size="12px">fas fa-minus-circle</v-icon>
+                    </v-layout>
+                </v-btn>
+                <v-btn id="increase-maze-size"
+                       class="ma-0"
+                       outline color="teal lighten-2"
+                       @click="gridSize++">
+                    <v-layout align-center justify-center pt-2>
+                        <v-icon size="14px">fas fa-th</v-icon>
+                        <v-icon class="pl-1 pb-3" size="12px">fas fa-plus-circle</v-icon>
+                    </v-layout>
+                </v-btn>
+            </div>
+            <div>
+                <v-btn id="random-maze"
+                       class="mr-0 my-0"
+                       disabled
+                       outline color=""
+                       @click="">
+                    <v-icon size="14px">fas fa-dice</v-icon>
+                </v-btn>
+                <v-btn @click="onPlayStopClicked"
+                       :disabled="! canStartGame"
+                       class="ma-0"
+                       id="play-stop"
+                       outline :color="isGameRunning ? 'red' : 'green'">
+                    <v-icon>{{isGameRunning ? 'fas fa-stop' : 'fas fa-play'}}</v-icon>
+                </v-btn>
+            </div>
         </v-layout>
-        <div class="maze-grid-container px-2 pb-2">
+        <div class="maze-grid-container pr-2 pb-2">
             <v-btn-toggle v-model="elementSelectedIndex" class="element-selector mr-2" mandatory>
                 <v-btn large v-for="(element, i) in ['wall', 'cat', 'mouse', 'milk']"
                        :id="`${element}-select`"
@@ -209,14 +220,17 @@
         align-items: center;
     }
 
+    #random-maze {
+        margin-left: 63px;
+    }
+
     .element-button {
         width: 55px;
         height: 55px;
     }
 
     .top-toolbar {
-        margin-left: 8px;
-        max-width: 320px;
+        max-width: 420px;
     }
 
     .hud {
@@ -243,9 +257,13 @@
         }
     }
 
-    @media screen and (min-width: 425px) {
-        .top-toolbar {
-            margin-left: 71px;
+    .help-button {
+        width: 55px;
+    }
+
+    @media screen and (min-width: 768px) {
+        #random-maze {
+            margin-left: 0;
         }
     }
 </style>

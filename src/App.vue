@@ -14,8 +14,8 @@
             </v-navigation-drawer>
 
             <v-content>
-                <v-container fluid>
-                    <maze-manager></maze-manager>
+                <v-container class="py-5" fluid>
+                    <maze-manager/>
                 </v-container>
             </v-content>
 
@@ -35,3 +35,9 @@
         private drawer: boolean = false;
     }
 </script>
+
+<style scoped lang="scss">
+    .instructions-panel {
+        max-width: 375px;
+    }
+</style>
