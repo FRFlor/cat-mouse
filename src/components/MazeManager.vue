@@ -91,7 +91,7 @@
                            outline :color="isGameRunning ? 'red' : 'green'">
                         <v-icon>{{isGameRunning ? 'fas fa-stop' : 'fas fa-play'}}</v-icon>
                     </v-btn>
-                    <span>{{isGameRunning? 'Stop!' : canStartGame ? 'Play!' : 'A cat and a mouse must be placed in the maze'}}</span>
+                    <span>{{isGameRunning? 'Stop!' : canStartGame ? 'Play!' : 'At least a cat and a mouse must be placed in the maze for the simulation to begin.'}}</span>
                 </v-tooltip>
             </div>
         </v-layout>
