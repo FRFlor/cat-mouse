@@ -1,5 +1,5 @@
 <template>
-    <div class="maze-grid"
+    <div class="maze-grid elevation-2"
          :style="`grid-template-columns: repeat(${this.columnCount}, 40px)`">
         <maze-cell v-for="(cell, position) in cells"
                    :key="position"
@@ -35,5 +35,6 @@
         display: grid;
         grid-column-gap: 0;
         grid-row-gap: 0;
+        border: rgba(68, 81, 159, 0.91) 1px solid;
     }
 </style>

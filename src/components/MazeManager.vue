@@ -1,6 +1,6 @@
 <template>
     <div class="maze-manager">
-        <v-layout class="top-toolbar mb-2" row align-center>
+        <v-layout class="top-toolbar mb-2" row align-end>
             <v-btn id="decrease-maze-size"
                    class="ma-0"
                    outline color="red lighten-2"
@@ -8,7 +8,7 @@
                    @click="gridSize--">
                 <v-layout align-center justify-center pt-2>
                     <v-icon size="14px">fas fa-th-large</v-icon>
-                    <v-icon class="pl-1 pb-3" size="12px">fas fa-compress-arrows-alt</v-icon>
+                    <v-icon class="pl-1 pb-3" size="12px">fas fa-minus-circle</v-icon>
                 </v-layout>
             </v-btn>
             <v-btn id="increase-maze-size"
@@ -16,14 +16,14 @@
                    outline color="teal lighten-2"
                    @click="gridSize++">
                 <v-layout align-center justify-center pt-2>
-                    <v-icon size="14px">fas fa-th-large</v-icon>
-                    <v-icon class="pl-1 pb-3" size="12px">fas fa-expand-arrows-alt</v-icon>
+                    <v-icon size="14px">fas fa-th</v-icon>
+                    <v-icon class="pl-1 pb-3" size="12px">fas fa-plus-circle</v-icon>
                 </v-layout>
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn @click="onPlayStopClicked"
                    :disabled="! canStartGame"
-                   class="ml-4"
+                   class="ml-4 mb-0"
                    id="play-stop"
                    outline :color="isGameRunning ? 'red' : 'green'">
                 <v-icon>{{isGameRunning ? 'fas fa-stop' : 'fas fa-play'}}</v-icon>
