@@ -86,7 +86,7 @@
                            outline :color="isGameRunning ? 'red' : 'green'">
                         <v-icon>{{isGameRunning ? 'fas fa-stop' : 'fas fa-play'}}</v-icon>
                     </v-btn>
-                    <span>{{(catCell || mouseCell) === undefined ? 'A cat and a mouse must be placed in the maze' : 'Play!'}}</span>
+                    <span>{{isGameRunning? 'Stop!' : canStartGame ? 'Play!' : 'A cat and a mouse must be placed in the maze'}}</span>
                 </v-tooltip>
             </div>
         </v-layout>
@@ -181,10 +181,6 @@
             }
         }
 
-        private async onExportClicked(): Promise<void> {
-            await save(JSON.stringify(this.grid), 'example.txt');
-        }
-
         private restartCat(): void {
             if (!this.catCell || !this.mouseCell || !this.gameLoopInterval) {
                 return;
@@ -255,7 +251,7 @@
         }
 
         private get canStartGame(): boolean {
-            return !this.isGameRunning && (!!this.mouseCell && !!this.catCell);
+            return (!!this.mouseCell && !!this.catCell);
         }
 
         private get isGameRunning(): boolean {
