@@ -28,6 +28,7 @@ export default class Cat {
     public move(): boolean {
         const nextCellToMove: GridCell | undefined = this.desiredPath.shift();
 
+        window.dispatchEvent(new Event('cat-no-more-targets'));
         if (nextCellToMove === undefined) {
             return false;
         }
@@ -37,10 +38,6 @@ export default class Cat {
         this.cell = nextCellToMove;
 
         return true;
-    }
-
-    private get thereAreNoTargetsLeft(): boolean {
-        return this.reachableMilkCells.length === 0 && this.reachableMouseCell === undefined;
     }
 
     private get allMilkCells(): GridCell[] {
@@ -66,10 +63,10 @@ export default class Cat {
             : undefined; // Mouse cell is unreachable
     }
 
-    public start() {
+    public start(): void {
         this.graph.compose(); // Build Graph
         this.unreacheableTargets = this.getUnreachableTargets();
-        this.desiredPath = this.getShortestPath();
+        this.getShortestPath();
     }
 
     private getUnreachableTargets(): GridCell[] {
@@ -89,7 +86,7 @@ export default class Cat {
         ).map((graphNode: GraphNode) => this.graph.toGridCell(graphNode));
     }
 
-    private getShortestPath(): GridCell[] {
+    private getShortestPath() {
         // With no reachable mouse or milk, just give up
         if (this.reachableMouseCell === undefined && this.reachableMilkCells.length === 0) {
             return [];
@@ -127,42 +124,51 @@ export default class Cat {
             });
         }
 
-
         const mousePosition: number = (this.reachableMouseCell === undefined)
             ? -1
             : this.reachableMouseCell.position;
 
         // Test each strategy and see how many moves each of them need
-        allStrategies.forEach((strategy: MoveStrategy) => {
-            let currentPosition = this.cell;
-            let mouseWasEatenByAccident: boolean = false;
-            strategy.targets.forEach((target: GridCell) => {
-                if (target.position === mousePosition && mouseWasEatenByAccident) {
-                    return;
+        allStrategies.forEach((strategy: MoveStrategy, index: number) => {
+            setTimeout(() => {
+                let currentPosition = this.cell;
+                let mouseWasEatenByAccident: boolean = false;
+                strategy.targets.forEach((target: GridCell) => {
+                    if (target.position === mousePosition && mouseWasEatenByAccident) {
+                        return;
+                    }
+
+                    const pathForTarget: GridCell[] = this.getPath(currentPosition, target);
+
+                    // Check to see if the poor mouse got eaten by accident
+                    if (pathForTarget.find((cell: GridCell) => cell.position === mousePosition) !== undefined) {
+                        mouseWasEatenByAccident = true;
+                    }
+
+                    strategy.path.push(...pathForTarget);
+                    currentPosition = strategy.path[strategy.path.length - 1];
+                });
+
+                window.dispatchEvent(new CustomEvent('cat-analyzing-path', {
+                    detail: {
+                        progress: Math.floor(100 * index / (allStrategies.length - 1)),
+                    },
+                }));
+
+                if (index === allStrategies.length - 1) {
+                    // Sort strategies by number of moves needed for victory
+                    allStrategies.sort((a: MoveStrategy, b: MoveStrategy) => {
+                        if (a.path.length === b.path.length) {
+                            return 0;
+                        }
+
+                        return a.path.length < b.path.length ? -1 : 1;
+                    });
+
+                    this.desiredPath = allStrategies[0].path;
+                    window.dispatchEvent(new Event('cat-ready'));
                 }
-
-                const pathForTarget: GridCell[] = this.getPath(currentPosition, target);
-
-                // Check to see if the poor mouse got eaten by accident
-                if (pathForTarget.find((cell: GridCell) => cell.position === mousePosition) !== undefined) {
-                    mouseWasEatenByAccident = true;
-                }
-
-                strategy.path.push(...pathForTarget);
-                currentPosition = strategy.path[strategy.path.length - 1];
-            });
+            }, 0);
         });
-
-        // Sort strategies by number of moves needed for victory
-        allStrategies.sort((a: MoveStrategy, b: MoveStrategy) => {
-            if (a.path.length === b.path.length) {
-                return 0;
-            }
-
-            return a.path.length < b.path.length ? -1 : 1;
-        });
-
-        // Return the best one
-        return allStrategies[0].path;
     }
 }

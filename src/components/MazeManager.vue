@@ -1,5 +1,13 @@
 <template>
     <div class="maze-manager">
+        <v-dialog v-model="isCalculatingPath"
+                  max-width="420">
+            <v-layout class="white pa-3 pt-4" column align-center justify-center>
+                <v-flex class="caption mb-3">Calculating Path:</v-flex>
+                <v-progress-linear ref="progress" :value="progress"></v-progress-linear>
+            </v-layout>
+        </v-dialog>
+
         <v-dialog
                 v-model="showRulesModal"
                 max-width="420"
@@ -72,6 +80,7 @@
                     <v-btn id="random-maze"
                            class="mr-0 my-0"
                            slot="activator"
+                           :disabled="isGameRunning"
                            outline color="blue darken-1"
                            @click="createRandomMaze">
                         <v-layout align-center justify-center pt-2>
@@ -84,7 +93,8 @@
 
                 <v-tooltip top>
                     <v-btn @click="onPlayStopClicked"
-                           :disabled="! canStartGame"
+                           :disabled="! canStartGame || isCalculatingPath"
+                           :loading="isCalculatingPath"
                            class="ma-0"
                            slot="activator"
                            id="play-stop"
@@ -124,13 +134,22 @@
     import MazeGrid, {CellContent} from './MazeGrid.vue';
     import Cat from '../classes/Cat';
     import GridCell from '../classes/GridCell';
-    // @ts-ignore
-    import {save} from 'save-file';
+
+    const throttle = (fn: any, delay: number) => {
+        let lastCall = 0;
+        return (...args: any) => {
+            const now = (new Date()).getTime();
+            if (now - lastCall < delay) {
+                return;
+            }
+            lastCall = now;
+            return fn(...args);
+        };
+    };
 
     @Component({components: {MazeGrid}})
     export default class MazeManager extends Vue {
         private CellContent = CellContent;
-        private showRulesModal: boolean = false;
 
         private elementToSelect: CellContent[] = [
             CellContent.Wall,
@@ -145,6 +164,9 @@
         private grid: GridCell[] = [];
         private cat: Cat | null = null;
         private gameLoopInterval: any = null;
+        private isCalculatingPath: boolean = false;
+        private progress: number = 0;
+        private showRulesModal: boolean = false;
 
         private get elementSelected(): CellContent {
             return this.elementToSelect[this.elementSelectedIndex];
@@ -152,6 +174,21 @@
 
         private created(): void {
             this.populateGridWithEmptyCells();
+
+            window.addEventListener('cat-analyzing-path', throttle((payload: any) => {
+                this.progress = payload.detail.progress;
+            }, 1000));
+
+            window.addEventListener('cat-ready', (_) => {
+                this.isCalculatingPath = false;
+                this.progress = 100;
+                if (this.gameLoopInterval) {
+                    clearInterval(this.gameLoopInterval);
+                }
+                this.gameLoopInterval = setInterval(() => {
+                    this.gameLoop();
+                }, 350);
+            });
         }
 
         private removeAll(contentToDelete: CellContent): void {
@@ -173,8 +210,19 @@
             this.grid = this.grid.map((_: GridCell, position: number) => {
                 return Math.random() < 0.3
                     ? new GridCell(position, CellContent.Wall)
-                    : new GridCell(position);
+                    : Math.random() < 0.05
+                        ? new GridCell(position, CellContent.Milk)
+                        : new GridCell(position);
             });
+
+            const catPos: number = Math.floor(Math.random() * this.gridSize);
+            let mousePos: number = 0;
+            do {
+                mousePos = Math.floor(Math.random() * this.gridSize);
+            } while (mousePos === catPos);
+
+            this.grid[catPos].content = CellContent.Cat;
+            this.grid[mousePos].content = CellContent.Mouse;
         }
 
         private onPlayStopClicked(): void {
@@ -186,18 +234,16 @@
                 if (this.catCell === undefined) {
                     return;
                 }
-                this.gameLoopInterval = setInterval(() => {
-                    this.gameLoop();
-                }, 350);
-
                 this.restartCat();
             }
         }
 
         private restartCat(): void {
-            if (!this.catCell || !this.mouseCell || !this.gameLoopInterval) {
+            if (!this.catCell) {
                 return;
             }
+            this.progress = 0;
+            this.isCalculatingPath = true;
             this.cat = new Cat(this.catCell, this.grid);
             this.cat.start();
         }
@@ -220,7 +266,10 @@
             }
 
             cell.content = this.elementSelected;
-            this.restartCat();
+
+            if (this.isGameRunning) {
+                this.restartCat();
+            }
         }
 
         private endGameLoop(): void {
