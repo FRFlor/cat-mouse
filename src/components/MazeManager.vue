@@ -93,7 +93,7 @@
 
                 <v-tooltip top>
                     <v-btn @click="onPlayStopClicked"
-                           :disabled="! canStartGame || isCalculatingPath"
+                           :disabled="!isGameRunning && (! canStartGame || isCalculatingPath)"
                            :loading="isCalculatingPath"
                            class="ma-0"
                            slot="activator"
