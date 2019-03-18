@@ -184,6 +184,8 @@
                     this.gameLoop();
                 }, 350);
             });
+
+            window.addEventListener('cat-finished', (_) => this.endGameLoop());
         }
 
         private removeAll(contentToDelete: CellContent): void {
@@ -224,7 +226,8 @@
             this.stopSpinningAnimations();
 
             if (this.isGameRunning) {
-                this.endGameLoop();
+                clearInterval(this.gameLoopInterval);
+                this.gameLoopInterval = null;
             } else {
                 if (this.catCell === undefined) {
                     return;
@@ -290,9 +293,7 @@
                 return;
             }
 
-            if (!this.cat.move()) {
-                this.endGameLoop();
-            }
+            this.cat.move();
         }
 
         private stopSpinningAnimations(): void {

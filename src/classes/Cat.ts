@@ -28,8 +28,8 @@ export default class Cat {
     public move(): boolean {
         const nextCellToMove: GridCell | undefined = this.desiredPath.shift();
 
-        window.dispatchEvent(new Event('cat-no-more-targets'));
         if (nextCellToMove === undefined) {
+            window.dispatchEvent(new Event('cat-finished'));
             return false;
         }
 
