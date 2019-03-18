@@ -89,7 +89,9 @@ export default class Cat {
     private getShortestPath() {
         // With no reachable mouse or milk, just give up
         if (this.reachableMouseCell === undefined && this.reachableMilkCells.length === 0) {
-            return [];
+            this.desiredPath = [];
+            window.dispatchEvent(new Event('cat-ready'));
+            return;
         }
 
         const allStrategies: MoveStrategy[] = [];
