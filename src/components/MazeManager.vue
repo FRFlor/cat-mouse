@@ -1,13 +1,7 @@
 <template>
     <div class="maze-manager">
-        <v-dialog v-model="isCalculatingPath"
-                  max-width="420">
-            <v-layout class="white pa-3 pt-4" column align-center justify-center>
-                <v-flex class="caption mb-3">Calculating Path:</v-flex>
-                <v-progress-linear ref="progress" :value="progress"></v-progress-linear>
-            </v-layout>
-        </v-dialog>
-
+        <loading-modal :show-modal="isCalculatingPath"
+                       :progress="progress"/>
         <v-dialog
                 v-model="showRulesModal"
                 max-width="420"
@@ -134,6 +128,7 @@
     import MazeGrid, {CellContent} from './MazeGrid.vue';
     import Cat from '../classes/Cat';
     import GridCell from '../classes/GridCell';
+    import LoadingModal from '@/components/LoadingModal.vue';
 
     const throttle = (fn: any, delay: number) => {
         let lastCall = 0;
@@ -147,7 +142,7 @@
         };
     };
 
-    @Component({components: {MazeGrid}})
+    @Component({components: {LoadingModal, MazeGrid}})
     export default class MazeManager extends Vue {
         private CellContent = CellContent;
 
