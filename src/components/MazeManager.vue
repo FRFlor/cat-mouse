@@ -44,7 +44,7 @@
                     <v-btn id="decrease-maze-size"
                            class="ma-0 ml-2"
                            outline color="red lighten-2"
-                           :disabled="gridSize <= 7"
+                           :disabled="gridSize <= 7 || isGameRunning"
                            slot="activator"
                            @click="gridSize--">
                         <v-layout align-center justify-center pt-2>
@@ -52,13 +52,14 @@
                             <v-icon class="pl-1 pb-3" size="12px">fas fa-minus-circle</v-icon>
                         </v-layout>
                     </v-btn>
-                    <span>Decrease maze size</span>
+                    <span>Decrease maze size (Min: 7x7)</span>
                 </v-tooltip>
 
                 <v-tooltip top>
                     <v-btn id="increase-maze-size"
                            class="ma-0"
                            slot="activator"
+                           :disabled="gridSize >= 12 ||  isGameRunning"
                            outline color="teal lighten-2"
                            @click="gridSize++">
                         <v-layout align-center justify-center pt-2>
@@ -66,7 +67,7 @@
                             <v-icon class="pl-1 pb-3" size="12px">fas fa-plus-circle</v-icon>
                         </v-layout>
                     </v-btn>
-                    <span>Increase maze size</span>
+                    <span>Increase maze size (Max: 12x12)</span>
                 </v-tooltip>
             </div>
             <div>
@@ -178,7 +179,7 @@
                 this.isCalculatingPath = false;
                 this.progress = 100;
                 if (this.gameLoopInterval) {
-                    clearInterval(this.gameLoopInterval);
+                    this.clearLoopInterval();
                 }
                 this.gameLoopInterval = setInterval(() => {
                     this.gameLoop();
@@ -201,6 +202,11 @@
             this.grid = 'x'.repeat(this.gridSize ** 2).split('')
                 .map((_: any, position: number) => new GridCell(position));
             GridCell.gridSize = this.gridSize;
+        }
+
+        private clearLoopInterval() {
+            clearInterval(this.gameLoopInterval);
+            this.gameLoopInterval = null;
         }
 
         private createRandomMaze(): void {
@@ -226,8 +232,7 @@
             this.stopSpinningAnimations();
 
             if (this.isGameRunning) {
-                clearInterval(this.gameLoopInterval);
-                this.gameLoopInterval = null;
+                this.clearLoopInterval();
             } else {
                 if (this.catCell === undefined) {
                     return;
@@ -275,8 +280,7 @@
                 return;
             }
 
-            clearInterval(this.gameLoopInterval);
-            this.gameLoopInterval = null;
+            this.clearLoopInterval();
 
             if (this.catCell === undefined) {
                 return;
