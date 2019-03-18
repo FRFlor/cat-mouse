@@ -3,8 +3,12 @@ import PathFinder from '@/classes/PathFinder';
 import Graph from '@/classes/Graph';
 import GridCell from '@/classes/GridCell';
 import GraphNode from '@/classes/GraphNode';
+import Vue from 'vue';
+import Vuetify from 'vuetify';
 // @ts-ignore
 import {CellContent} from '@/components/MazeCell';
+
+Vue.use(Vuetify);
 
 describe('PathFinder', () => {
     it('Calculates the shortest path between to vertices of a graph', () => {
