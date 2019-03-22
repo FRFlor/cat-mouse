@@ -131,6 +131,7 @@
     import GridCell from '../classes/GridCell';
     import LoadingModal from '@/components/LoadingModal.vue';
 
+    // Reference: https://codeburst.io/throttling-and-debouncing-in-javascript-646d076d0a44
     const throttle = (fn: any, delay: number) => {
         let lastCall = 0;
         return (...args: any) => {
